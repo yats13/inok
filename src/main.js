@@ -1,10 +1,21 @@
 import Vue from 'vue'
-import './plugins/axios'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 import App from './App.vue'
 import router from './router'
+import VCalendar from 'v-calendar'
+import 'vue-awesome/icons'
+import Icon from 'vue-awesome/components/Icon'
+import VuePlyr from "vue-plyr";
+import VueMasonry from 'vue-masonry-css';
+import "vue-plyr/dist/vue-plyr.css";
 
+Vue.component('v-icon', Icon)
+Vue.use(VueAxios, axios)
+Vue.use(VCalendar, { firstDayOfWeek: 2 })
+Vue.use(VuePlyr)
 Vue.config.productionTip = false
-
+Vue.use(VueMasonry)
 // This callback runs before every route change, including on page load.
 router.beforeEach((to, from, next) => {
   // This goes through the matched routes from last to first, finding the closest route with a title.
@@ -16,13 +27,13 @@ router.beforeEach((to, from, next) => {
   const previousNearestWithMeta = from.matched.slice().reverse().find(r => r.meta && r.meta.metaTags);
 
   // If a route with a title was found, set the document (page) title to that value.
-  if(nearestWithTitle) document.title = nearestWithTitle.meta.title;
+  if (nearestWithTitle) document.title = nearestWithTitle.meta.title;
 
   // Remove any stale meta tags from the document using the key attribute we set below.
   Array.from(document.querySelectorAll('[data-vue-router-controlled]')).map(el => el.parentNode.removeChild(el));
 
   // Skip rendering meta tags if there are none.
-  if(!nearestWithMeta) return next();
+  if (!nearestWithMeta) return next();
 
   // Turn the meta tag definitions into actual elements in the head.
   nearestWithMeta.meta.metaTags.map(tagDef => {
@@ -37,8 +48,8 @@ router.beforeEach((to, from, next) => {
 
     return tag;
   })
-  // Add the meta tags to the document head.
-  .forEach(tag => document.head.appendChild(tag));
+    // Add the meta tags to the document head.
+    .forEach(tag => document.head.appendChild(tag));
 
   next();
 });

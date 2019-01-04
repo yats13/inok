@@ -1,6 +1,14 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Vue from "vue";
+import Router from "vue-router";
+import Welcome from "@/views/Welcome";
+import Index from "@/views/Index";
+import About from "@/views/About";
+import Events from "@/views/Events";
+import Gallery from "@/views/Gallery";
+import Video from "@/views/Video";
+import News from "@/views/News";
+import Post from "@/views/Post";
+import Sinod from "@/views/Sinod";
 
 Vue.use(Router)
 
@@ -8,18 +16,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home,
+      name: 'welcome',
+      component: Welcome,
       meta: {
-        title: 'Home Page - Example App',
+        title: 'Монастыри Украины - официальный сайт',
         metaTags: [
           {
             name: 'description',
-            content: 'The home page of our example app.'
+            content: 'Карта монастырей Украины и веб-портал Синодальной комиссии Украинской православной церкви по делам монастырей.'
           },
           {
             property: 'og:description',
-            content: 'The home page of our example app.'
+            content: 'Карта монастырей Украины и веб-портал Синодальной комиссии Украинской православной церкви по делам монастырей.'
           }
         ]
       }
@@ -44,6 +52,54 @@ export default new Router({
           }
         ]
       }
+    },
+    {
+      path: '/post/:post_id',
+      name: "post",
+      component: Post
+    },
+    {
+      path: "/index",
+      name: "index",
+      component: Index,
+      meta: {
+        title: 'Монастыри Украины - официальный сайт',
+        metaTags: [
+          {
+            name: 'description',
+            content: 'Киевская, Почаевская и Святогорская лавра, а также монастыри Украины. Веб-портал Синодальной комиссии Украинской православной церкви по делам монастырей.'
+          },
+          {
+            property: 'og:description',
+            content: 'Киевская, Почаевская и Святогорская лавра, а также монастыри Украины. Веб-портал Синодальной комиссии Украинской православной церкви по делам монастырей.'
+          }
+        ]
+      }
+    },
+    {
+      path: "/events",
+      name: "Events",
+      component: Events
+    },
+    {
+      path: "/gallery",
+      name: "Gallery",
+      component: Gallery
+    },
+    {
+      path: "/video",
+      name: "Video",
+      component: () => import(/* webpackChunkName: "video" */ './views/Video.vue'),
+    },
+    {
+      path: "/sinod",
+      name: "Sinod",
+      component: Sinod
+    },
+    {
+      path: "/news",
+      name: "News",
+      component: News
     }
   ],
   mode: 'history',
