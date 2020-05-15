@@ -1,0 +1,1 @@
+<?phpnamespace Api\Monasteries;use Phalcon\Mvc\Model;class VideosLang extends Model{}

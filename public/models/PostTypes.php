@@ -1,0 +1,1 @@
+<?phpnamespace Api\Monasteries;use Phalcon\Model\Query;use Phalcon\Mvc\Model;use Phalcon\Mvc\Model\Manager;class PostTypes extends Model{    public $id;    public $name;    public $color;    public function initialize()    {        $this->hasOne('id', Posts::class, 'post_type_id');    }}

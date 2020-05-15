@@ -4,7 +4,4 @@ dist/
 
 # Editor directories and files
 .idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+.vscode

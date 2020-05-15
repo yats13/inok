@@ -4,13 +4,11 @@
     @media #{$medium} and (min-width: $min-width) and (min-height: $min-height) {
       @content;
     }
-  } @else
-  if ($min-width != null and $min-height == null) {
+  } @else if ($min-width != null and $min-height == null) {
     @media #{$medium} and (min-width: $min-width) {
       @content;
     }
-  } @else
-  if ($min-width == null and $min-height != null) {
+  } @else if ($min-width == null and $min-height != null) {
     @media #{$medium} and (min-height: $min-height) {
       @content;
     }
@@ -18,7 +16,7 @@
 }
 
 // Creating triangles
-@mixin triangle ($size, $color, $direction) {
+@mixin triangle($size, $color, $direction) {
   height: 0;
   width: 0;
   $width: nth($size, 1);
@@ -32,57 +30,46 @@
       border-bottom: $height solid $foreground-color;
       border-left: $width solid $background-color;
       border-right: $width solid $background-color;
-    } @else
-    if $direction == right {
+    } @else if $direction == right {
       border-bottom: $width solid $background-color;
       border-left: $height solid $foreground-color;
       border-top: $width solid $background-color;
-    } @else
-    if $direction == down {
+    } @else if $direction == down {
       border-left: $width solid $background-color;
       border-right: $width solid $background-color;
       border-top: $height solid $foreground-color;
-    } @else
-    if $direction == left {
+    } @else if $direction == left {
       border-bottom: $width solid $background-color;
       border-right: $height solid $foreground-color;
       border-top: $width solid $background-color;
     }
-  } @else
-  if ($direction == up-right) or ($direction == up-left) {
+  } @else if ($direction == up-right) or ($direction == up-left) {
     border-top: $height solid $foreground-color;
     @if $direction == up-right {
       border-left: $width solid $background-color;
-    } @else
-    if $direction == up-left {
+    } @else if $direction == up-left {
       border-right: $width solid $background-color;
     }
-  } @else
-  if ($direction == down-right) or ($direction == down-left) {
+  } @else if ($direction == down-right) or ($direction == down-left) {
     border-bottom: $height solid $foreground-color;
     @if $direction == down-right {
       border-left: $width solid $background-color;
-    } @else
-    if $direction == down-left {
+    } @else if $direction == down-left {
       border-right: $width solid $background-color;
     }
-  } @else
-  if ($direction == inset-up) {
+  } @else if ($direction == inset-up) {
     border-color: $background-color $background-color $foreground-color;
     border-style: solid;
     border-width: $height $width;
-  } @else
-  if ($direction == inset-down) {
+  } @else if ($direction == inset-down) {
     border-color: $foreground-color $background-color $background-color;
     border-style: solid;
     border-width: $height $width;
-  } @else
-  if ($direction == inset-right) {
+  } @else if ($direction == inset-right) {
     border-color: $background-color $background-color $background-color $foreground-color;
     border-style: solid;
     border-width: $width $height;
-  } @else
-  if ($direction == inset-left) {
+  } @else if ($direction == inset-left) {
     border-color: $background-color $foreground-color $background-color $background-color;
     border-style: solid;
     border-width: $width $height;
@@ -93,14 +80,14 @@
 // Breakpoint-loop
 // @include breakpoint-loop(width, (($medium, 80%), ($large, 50%)));
 @mixin breakpoint-loop($element, $properties) {
-    @each $property in $properties {
-        $size: nth($property, 1);
-        $value: nth($property, 2);
+  @each $property in $properties {
+    $size: nth($property, 1);
+    $value: nth($property, 2);
 
-        @include breakpoint($size) {
-            #{$element}: $value;
-        }
+    @include breakpoint($size) {
+      #{$element}: $value;
     }
+  }
 }
 
 
@@ -114,4 +101,6 @@
   height: 100%;
   left: 0;
   top: 0;
-};
+}
+
+;

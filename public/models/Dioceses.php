@@ -1,0 +1,1 @@
+<?phpnamespace Api\Monasteries;use Phalcon\Mvc\Model;use Phalcon\Mvc\Model\Manager;class Dioceses extends Model{    public $id;    public function getSource()    {        return 'dioceses';    }    public function initialize()    {        $this->hasMany('id', Monasteries::class, 'diocese_id', ['alias' => 'dioceseLang']);    }}

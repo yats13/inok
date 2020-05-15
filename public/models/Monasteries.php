@@ -1,0 +1,1 @@
+<?phpnamespace Api\Monasteries;use Phalcon\Mvc\Model;class Monasteries extends Model{    public $id;    public function getSource()    {        return 'monasteries';    }}

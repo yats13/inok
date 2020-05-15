@@ -1,6 +1,8 @@
 <template>
-  <div></div>
+    <section></section>
 </template>
 <script>
-export default { name: "news" };
+    export default {
+        name: "news"
+    };
 </script>

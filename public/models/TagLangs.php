@@ -1,0 +1,1 @@
+<?phpnamespace Api\Monasteries;use Phalcon\Mvc\Model;class TagLangs extends Model{    public function initialize()    {        $this->hasMany("tag_id", "Tags", "id");    }}

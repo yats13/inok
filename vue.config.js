@@ -1,9 +1,9 @@
 module.exports = {
-  css: {
-    loaderOptions: {
-      sass: {
-        data: '@import "@/scss/settings.scss";'
-      }
+    css: {
+        loaderOptions: {
+            sass: {
+                data: '@import "@/scss/settings.scss";'
+            }
+        }
     }
-  }
 }

@@ -1,0 +1,1 @@
+<?phpnamespace Api\Monasteries;use Phalcon\Mvc\Model;class RegionsLang extends Model{    public $post_id;    public function getSource()    {        return 'regions_lang';    }    public function initialize()    {        $this->hasMany('region_id', Monasteries::class, 'region_id', ['alias' => 'diocese']);    }}

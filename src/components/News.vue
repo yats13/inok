@@ -1,231 +1,179 @@
 <template>
-  <div class="news" @scroll="handleScroll">
-    <div class="tags_wrapper">
-      <h2>{{tagName}}</h2>
-      <ul class="tags">
-        <span>Рубрики:</span>
-        <li>
-          <a
-            class="tag"
-            @click="isActive = '', tagName='Последние события'"
-            :class="{'active': !isActive}"
-          >Все</a>
-        </li>
-        <li v-for="tag in tags" :key="tag.id">
-          <a
-            class="tag"
-            @click="isActive = tag.id, tagName = tag.name"
-            :class="{'active': isActive === tag.id ? true:false}"
-          >{{tag.name}}</a>
-        </li>
-      </ul>
-      <div class="tag__content">
-        <router-link
-          v-for="content in filteredContent"
-          :to="{ name:'post', params: { post_id: content.id }}"
-          class="tag__card"
-          :key="content.id"
-        >
-          <div class="tag__text">
-            <h3>{{content.title}}</h3>
-            <span class="post__date">{{ content.date}}</span>
-          </div>
-        </router-link>
-      </div>
-    </div>
-    <aside class="recent-info">
-      <v-calendar :attributes="attrs"></v-calendar>
-      <p>{{fasting}}</p>
-      <span v-for="holiday in holidays" :key="holiday.id">{{holiday.title}}</span>
-      <div>
-        <span v-for="(saint, index) in saints" :key="index">{{saint.title}}</span>
-      </div>
-    </aside>
-  </div>
+    <section id="news">
+        <div class="center-block">
+            <vue-plyr :key="video.id" class="main-video">
+                <div :data-plyr-embed-id="video.id" data-plyr-provider="youtube"></div>
+            </vue-plyr>
+            <span class="main-title">{{video.title}}</span>
+        </div>
+        <div class="right-block">
+            <div class="tags flex-column">
+                <a
+                        :key="index" :style="{'background': item.color}"
+                        class="tag__item"
+                        v-for="(item, index) in types"
+                        v-on:click="currentPostType = index"
+                >{{ item.name }}
+                </a>
+            </div>
+            <router-link
+                    :key="post.id"
+                    :to="{name:'post', params:{post_id:post.post_id, lang:post.lang_id}}"
+                    class="news-item"
+                    v-for="post in getPosts">
+                <div
+                        :style="{backgroundImage: 'url(' + post.image + ')'}"
+                        class="title__image"
+                        v-if="post.image"
+                ></div>
+                <div class="title__wrapper">
+                    <span class="title">{{ post.title }}</span>
+                    <div class="line"></div>
+                    <span class="title__date">{{post.date}}</span>
+                </div>
+            </router-link>
+        </div>
+    </section>
 </template>
 <script>
-import { TimelineLite } from "gsap";
-import "vue-plyr";
-import "vue-plyr/dist/vue-plyr.css";
-import { Calendar } from "v-calendar";
-import "@/assets/calendar.min.css";
-export default {
-  name: "news",
-  components: {
-    vCalendar: Calendar
-  },
-  data() {
-    return {
-      categories: [],
-      attrs: [
-        {
-          key: "",
-          highlight: {
-            backgroundColor: "rgba(200,200,247,.9)"
-          },
-          dates: new Date(),
-          popover: {
-            label: "!"
-          }
+    export default {
+        name: "news",
+        data() {
+            return {
+                types: [],
+                currentPostType: 1,
+                tags: [],
+                video: {},
+                posts: []
+            };
+        },
+        methods: {
+            async getNews() {
+                await this.axios
+                    .get("https://inok.info/public/api/posts-list")
+                    .then(response => {
+                        this.types = response.data.types;
+                        this.tags = response.data.tags;
+                    });
+            },
+            async getVideo() {
+                await this.axios
+                    .get("https://www.googleapis.com/youtube/v3/search", {
+                            params: {
+                                key: 'AIzaSyAgPMk9rrn83qqUtyPa7eKTRdhkknMJ--w',
+                                channelId: 'UCRZ0DXqhWAwzjuzsksKQRrA',
+                                type: 'video',
+                                part: 'snippet',
+                                order: 'date',
+                                maxResults: 1
+                            }
+                        }
+                    )
+                    .then(response => {
+                        this.video.id = response.data.items[0].id.videoId;
+                        this.video.title = response.data.items[0].snippet.title;
+                    })
+            },
+        },
+        computed: {
+            getPosts: function () {
+                return this.types[this.currentPostType].posts
+            }
+        },
+        created() {
+            this.getNews();
+            this.getVideo();
         }
-      ],
-      holidays: [],
-      saints: [],
-      fasting: "",
-      tags: [],
-      contents: [],
-      isActive: "",
-      tagName: "Последние события"
     };
-  },
-  mounted() {
-    this.getPosts();
-    this.renderCalendar();
-  },
-  methods: {
-    renderCalendar() {
-      this.axios
-        .get("https://azbyka.ru/days/api/day.json")
-        .then(
-          response => (
-            (this.saints = response.data.saints),
-            (this.holidays = response.data.holidays),
-            (this.fasting =
-              response.data.fasting.type === 1 ? "Постный день" : "Поста нет")
-          )
-        );
-    },
-    getPosts() {
-      this.axios
-        .get("https://inok.info/public/api/posts-list")
-        .then(
-          response => (
-            (this.contents = response.data.posts),
-            (this.tags = response.data.tags)
-          )
-        );
-    },
-    handleScroll() {
-      const tl = new TimelineLite();
-      tl.to(".recent-info", 0.5, { y: -window.scrollY / 8 });
-    }
-  },
-  computed: {
-    filteredContent() {
-      if (this.isActive === "") {
-        return this.contents;
-      } else {
-        return this.contents.filter(content => {
-          if (content.tags.indexOf(this.isActive)) return content;
-        });
-      }
-    }
-  },
-  created() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
-  }
-};
 </script>
-<style scoped>
-.news {
-  position: relative;
-}
-.tags_wrapper {
-  width: calc(80% - 2em);
-}
-.tags_wrapper h2 {
-  font-size: 2rem;
-}
-.tags_wrapper h3 {
-  color: inherit;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-.tags_wrapper p {
-  font-size: 0.9rem;
-  font-weight: normal;
-}
-.tags_wrapper ul {
-  display: flex;
-  flex-direction: row;
-  list-style-type: none;
-  margin: 1rem 0;
-}
-.tags_wrapper .tag {
-  position: relative;
-  padding: 0.5em;
-}
-.tag:hover {
-  cursor: pointer;
-}
-.tag::before,
-.active::before {
-  position: absolute;
-  content: "";
-  height: 4px;
-  width: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(200, 200, 247, 0.9),
-    rgba(51, 120, 185, 0.9)
-  );
-  bottom: 0;
-  right: 0;
-  transition: width 0.2s cubic-bezier(0.51, 0.18, 0, 0.88) 0.1s;
-}
-.tag:hover::before,
-.active::before {
-  left: 0;
-  width: 100%;
-}
-.tag__content {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  margin: 0 -1em;
-  /* width:80%; */
-}
-.tag__card {
-  width: calc(33% - 2em);
-  margin: 0.25rem 1em;
-  /* background-color: #fff;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); */
-}
-.tag__text {
-  padding: 0.5em;
-}
-.thumbnail {
-  overflow: hidden;
-  max-height: 180px;
-}
-.thumbnail img {
-  max-width: 100%;
-}
-.recent-info {
-  position: absolute;
-  height: 80vh;
-  width: 20%;
-  right: -4em;
-  top: 25%;
-  padding: 3em 2em;
-  background: linear-gradient(
-    120deg,
-    rgba(200, 200, 247, 0.9),
-    rgba(51, 120, 185, 0.9)
-  );
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
-}
-.recent-info h3 {
-  font-size: 1.5rem;
-}
-.recent-info ul {
-  padding-left: 1em;
-}
-.post__date {
-  font-size: 0.9rem;
-  font-weight: 100;
-}
+<style lang="scss">
+    .center-block {
+        display: flex;
+        flex-direction: column;
+        width: 60%;
+        margin-right: 1em;
+    }
+
+    .main-video {
+        min-width: 320px;
+        width: 100%;
+    }
+
+    .right-block {
+        width: 40%;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .news-item {
+        flex-basis: 100%;
+        margin: 1px 2px;
+        display: flex;
+        max-height: 8rem;
+    }
+
+    .news-item:nth-first-child(1) {
+        margin-top: 0;
+    }
+
+    .news-item:nth-last-child(1) {
+        margin-bottom: 0;
+    }
+
+    .title {
+        text-transform: uppercase;
+
+        &__image {
+            flex: 1;
+            width: 12rem;
+
+            height: auto;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        &__wrapper {
+            flex: 2;
+            bottom: 1rem;
+            background-color: #fff;
+            padding: 0.5em;
+        }
+
+        &__date {
+            color: #777;
+            font-size: 0.8em;
+        }
+    }
+
+    .main-title {
+        font-size: 2em;
+        padding: 1em;
+        background-color: #fff;
+    }
+
+    .tags {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .tag__item {
+        color: white;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media screen and (max-width: 767px) {
+        #news {
+            flex-direction: column;
+        }
+        .center-block,
+        .right-block {
+            width: 100%;
+        }
+    }
 </style>

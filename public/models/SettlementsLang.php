@@ -1,0 +1,1 @@
+<?phpnamespace Api\Monasteries;use Phalcon\Mvc\Model;class SettlementsLang extends Model{    public $post_id;    public function getSource()    {        return 'settlements_lang';    }    public function initialize()    {        $this->hasOne('diocese_id', Dioceses::class, 'id', ['alias' => 'diocese']);    }}

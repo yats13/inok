@@ -1,0 +1,1 @@
+<template>    <div class="list page">    </div></template><script>    export default {        name: "List",        data() {            return {                list: []            }        }    }</script><style scoped></style>
