@@ -73,7 +73,6 @@
     }
 
     section {
-        height: calc(100vh - 8em);
         padding: 4rem;
     }
 

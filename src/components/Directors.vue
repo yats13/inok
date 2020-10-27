@@ -2,7 +2,7 @@
     <div @scroll="directorScroll" class="directors__wrapper">
         <transition-group class="img-slider" name="slide" tag="div">
             <div class="directors__item" v-bind:key="number" v-for="number in [currentSlide]">
-                <div :style="{'order': currentSlide == 0? 2:1}" class="container__director">
+                <div :style="{'order' : currentSlide == 0 ? 2:1}" class="container__director">
                     <h3>{{ directors[currentSlide].title}}</h3>
                     <p>{{ directors[currentSlide].text }}</p>
                     <router-link class="more btn" to="/about">Подробнее</router-link>
@@ -13,7 +13,7 @@
             </div>
         </transition-group>
         <div class="link-group">
-            <a @click="play=!play" class="play">{{play?'Пауза':'Старт'}}</a>
+            <a @click="play=!play" class="play">{{ play ? 'Пауза' : 'Старт' }}</a>
             <a @click="currentSlide = currentSlide === 1 ? 0 : 1" class="next">Далее</a>
         </div>
     </div>
@@ -22,7 +22,7 @@
   import bg from "@/assets/bg2.jpg";
   import pavel from "@/assets/Pavel.jpg";
   import onufrii from "@/assets/Onufrii.jpg";
-  import {TimelineLite} from "gsap";
+  // import {TimelineLite} from "gsap";
 
   export default {
         name: "Directors",
@@ -51,16 +51,6 @@
         },
         methods: {
             directorScroll() {
-                let opacityValue;
-                let widthValue;
-                let tl = new TimelineLite();
-                tl.to(".container__director", 0.8, {y: -window.scrollY / 10}).to(
-                    ".image",
-                    0.5,
-                    {opacity: this.opacityValue},
-                    "-=0.7"
-                );
-
                 if (window.scrollY < 100) {
                     this.opacityValue = 0;
                     this.widthValue = "50%";
@@ -171,7 +161,7 @@
         transform: translateX(-50%);
     }
 
-    @media screen and (max-width: 767px) {
+    @media screen and (max-width: 960px) {
         .image_wrapper {
             height: 50%;
             width: 100%;

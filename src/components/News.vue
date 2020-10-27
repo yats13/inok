@@ -6,14 +6,19 @@
             </vue-plyr>
             <span class="main-title">{{video.title}}</span>
         </div>
-        <div class="right-block">
+      <div class="right-block">
             <div class="tags flex-column">
                 <a
-                        :key="index" :style="{'background': item.color}"
+                        :key="index"
                         class="tag__item"
                         v-for="(item, index) in types"
                         v-on:click="currentPostType = index"
-                >{{ item.name }}
+                        :class="{ active: index === currentPostType }"
+                >
+                  <span class="background"
+                        :style="{'background': item.color}"
+                  ></span>
+                  <span class="text">{{ item.name }}</span>
                 </a>
             </div>
             <router-link
@@ -21,11 +26,6 @@
                     :to="{name:'post', params:{post_id:post.post_id, lang:post.lang_id}}"
                     class="news-item"
                     v-for="post in getPosts">
-                <div
-                        :style="{backgroundImage: 'url(' + post.image + ')'}"
-                        class="title__image"
-                        v-if="post.image"
-                ></div>
                 <div class="title__wrapper">
                     <span class="title">{{ post.title }}</span>
                     <div class="line"></div>
@@ -44,21 +44,20 @@
                 currentPostType: 1,
                 tags: [],
                 video: {},
-                posts: []
             };
         },
         methods: {
-            async getNews() {
-                await this.axios
-                    .get("https://inok.info/public/api/posts-list")
-                    .then(response => {
-                        this.types = response.data.types;
-                        this.tags = response.data.tags;
-                    });
-            },
-            async getVideo() {
-                await this.axios
-                    .get("https://www.googleapis.com/youtube/v3/search", {
+           getNews() {
+             return this.axios
+                      .get("https://inok.info/public/api/posts-list")
+                      .then(response => {
+                          this.types = response.data.types;
+                          this.tags = response.data.tags;
+                      });
+          },
+          getVideo() {
+              return this.axios
+                   .get("https://www.googleapis.com/youtube/v3/search", {
                             params: {
                                 key: 'AIzaSyAgPMk9rrn83qqUtyPa7eKTRdhkknMJ--w',
                                 channelId: 'UCRZ0DXqhWAwzjuzsksKQRrA',
@@ -73,16 +72,22 @@
                         this.video.id = response.data.items[0].id.videoId;
                         this.video.title = response.data.items[0].snippet.title;
                     })
-            },
+          },
+          fetchData(){
+            setInterval(()=>{
+              this.getNews(), this.getVideo
+            },1000)
+          }
         },
         computed: {
-            getPosts: function () {
-                return this.types[this.currentPostType].posts
-            }
+          getPosts(){
+            return this.types[1].posts
+          }
         },
-        created() {
-            this.getNews();
+        async mounted(){
             this.getVideo();
+            this.getNews();
+            this.fetchData();
         }
     };
 </script>
@@ -90,7 +95,7 @@
     .center-block {
         display: flex;
         flex-direction: column;
-        width: 60%;
+        flex: 1 1 50%;
         margin-right: 1em;
     }
 
@@ -100,17 +105,18 @@
     }
 
     .right-block {
-        width: 40%;
+        flex: 1 1 50%;
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
+      align-content: flex-start;
     }
 
     .news-item {
-        flex-basis: 100%;
+        flex: 1 1 calc(50% - 4px);
         margin: 1px 2px;
         display: flex;
-        max-height: 8rem;
+        flex-direction: column;
     }
 
     .news-item:nth-first-child(1) {
@@ -124,17 +130,7 @@
     .title {
         text-transform: uppercase;
 
-        &__image {
-            flex: 1;
-            width: 12rem;
-
-            height: auto;
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-
         &__wrapper {
-            flex: 2;
             bottom: 1rem;
             background-color: #fff;
             padding: 0.5em;
@@ -160,19 +156,39 @@
     }
 
     .tag__item {
-        color: white;
+        color: inherit;
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 3rem;
+        position: relative;
+      .background{
+        position: absolute;
+        height: 3px;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        transition: height .2s cubic-bezier(.25, .5, .75, 1);
+      }
+      &:hover .text{
+        color: white;
+        z-index: 4;
+      }
+      &:hover .background{
+        height: 100%;
+        z-index: 3;
+      }
     }
 
-    @media screen and (max-width: 767px) {
-        #news {
-            flex-direction: column;
-        }
+
+    @media screen and (max-width: 960px) {
+      #news {
+        flex-direction: column;
+      }
         .center-block,
         .right-block {
+          flex-direction: column;
             width: 100%;
         }
     }
